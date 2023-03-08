@@ -1,0 +1,172 @@
+create DATABASE NormalizationProblem2
+Drop Database NormalizationProblem2
+
+Drop table Member
+create table Member(Member_Id int Primary key,
+                    First_Name varchar(255),
+                    Last_Name varchar(255),
+                    email varchar (255),
+                    Home_Phone int,
+                    Work_Phone int,
+                    Spouse_Name varchar(255),
+                    );
+
+Insert into Member Values(1, 'Tom', 'Murphy','tm@gmail.ie',0124,0125,'Mary'),
+							(2, 'Mary', 'Kelly','mk@gmail.ie',0126,0127,'Tom'),
+							(3, 'Joe' ,'Walsh','jw@gmail.ie',0128,0129,'Lisa'),
+							(4, 'Ned' ,'Flanders','nf@gmail.ie',0130,0131,'Maud')
+
+
+                    select * from Member
+
+
+create table Child(Child_Id int Primary key,
+                    Child_Name varchar(255))
+
+Insert into Child Values(1, 'Lisa Murphy'),
+							(2, 'Bart Simpson'),
+							(3, 'Homer Kelly'),
+							(4, 'Rod Flanders'),
+							(5, 'Tod Flanders'),
+							(6, 'Lisa Flanders')
+Insert into Child Values(7, 'Lisa Abbott')
+
+select * from Child
+
+Create table MemberChild(Child_Id int foreign key references Child(Child_Id), 
+                        Member_Id int foreign key references Member(Member_Id))
+
+Insert into MemberChild VALUES(1, 1),
+                        (2, 2),
+                        (3, 3),
+                        (4, 4),
+                        (5, 4),
+                        (6, 4)
+Insert into MemberChild VALUES (7, 5)
+
+                        select * from MemberChild
+
+Create TABLE Event(Event_Id int Primary Key, Event_Name varchar(255), Event_Date Date, Event_Price int)
+
+Insert into Event Values(1, 'Electric Picnic','2017-06-26',100),
+							(2, 'Summer Camp','2017-05-05',20),
+							(3, 'Barbeque','2017-04-17',10),
+							(4, 'Art Festival','2017-09-06',15)
+
+
+select * from Event
+
+
+Create table MemberEvent(Member_Id int foreign key references Member(Member_Id), 
+                    Event_Id int foreign key references Event(Event_Id))
+                     
+
+Insert into MemberEvent Values(1,2), 
+(2,2), 
+(3,2), 
+(1,3), 
+(2,3), 
+(3,3), 
+(4,3), 
+(1,4), 
+(4,4), 
+(3,4), 
+(1,4), 
+(2,1)
+
+Insert into MemberEvent Values(5,1)
+
+
+select * from MemberEvent
+select * from Member
+select * from Child
+select * from Event
+select * from MemberChild
+
+
+Select * from Member M
+Inner Join MemberChild MC on M.Member_Id = MC.Member_Id
+
+Select * from MemberEvent ME
+Inner Join Event E on E.Event_Id = ME.Event_Id
+Inner Join Member M on M.Member_Id = ME.Member_Id;
+
+
+--1)List member details who are attending electric picnic
+
+Select * from Member M
+Inner join MemberEvent on M.Member_Id = MemberEvent.Member_Id
+Inner Join Event on MemberEvent.Event_Id = Event.Event_Id
+where Event_Name = 'Electric Picnic'; --Does not list children
+
+
+--2)Return the number of members attending each event listed
+Select COUNT(M.Member_Id) as Attendees, Event_Name from Member M
+Inner join MemberEvent on M.Member_Id = MemberEvent.Member_Id
+Inner Join Event on MemberEvent.Event_Id = Event.Event_Id
+Group By Event_Name 
+
+--3)Return the number of children each member has
+Select COUNT(C.Child_Id) as No_of_Children from Child C
+Inner JOIN MemberChild MC on C.Child_Id = MC.Child_Id
+Inner Join Member M on MC.Member_Id = M.Member_Id
+Group By  M.Member_Id --M.First_Name, M.Last_Name --ORDER BY ASC
+
+Insert into Member Values(5, 'Mary', 'Abbott','ma@gmail.ie',0127,0128,'Mary')
+select * from Member
+
+--4)Return the number of children each member has sorted by First Name and Last Name
+Select M.First_Name,  M.Last_Name, COUNT(C.Child_Id) as No_of_Children from Child C
+Inner JOIN MemberChild MC on C.Child_Id = MC.Child_Id
+Inner Join Member M on MC.Member_Id = M.Member_Id
+Group By M.First_Name, M.Last_Name
+ORDER BY M.First_Name, M.Last_Name
+
+--5) Return the number of events each member is going to
+Select COUNT(E.Event_Id) as No_Of_Events, M.First_Name, M.Last_Name from Member M
+Inner join MemberEvent on M.Member_Id = MemberEvent.Member_Id
+Inner Join Event E on MemberEvent.Event_Id = E.Event_Id
+Group By M.First_Name, M.Last_Name
+Order By M.First_Name, M.Last_Name
+
+--6) Return the children details of each member
+Select M.First_Name,  M.Last_Name, C.Child_Name from Child C
+Inner JOIN MemberChild MC on C.Child_Id = MC.Child_Id
+Inner Join Member M on MC.Member_Id = M.Member_Id
+Group By M.First_Name, M.Last_Name, C.Child_Name
+ORDER BY M.First_Name, M.Last_Name
+
+--7) Return the event details each member is attending
+Select E.Event_Name, E.Event_Date, E.Event_Price as Event_Price, M.First_Name, M.Last_Name from Member M
+Inner join MemberEvent on M.Member_Id = MemberEvent.Member_Id
+Inner Join Event E on MemberEvent.Event_Id = E.Event_Id
+Group By M.First_Name, M.Last_Name, E.Event_Name, E.Event_Date, E.Event_Price
+Order By M.First_Name, M.Last_Name
+
+--8) Total Price each member paid for all events order by member, use sum function
+Select SUM(E.Event_Price) as Total_Cost_Paid, M.First_Name, M.Last_Name From Event E
+Inner join MemberEvent ME on E.Event_Id = ME.Event_Id
+Inner Join Member M on ME.Member_Id = M.Member_Id
+Group By M.First_Name, M.Last_Name
+--Order By M.First_Name, M.Last_Name
+
+--9) Return which member paid the most on events
+Select Top 1 SUM(E.Event_Price) as Total_Cost_Paid, M.First_Name, M.Last_Name From Event E
+Inner join MemberEvent ME on E.Event_Id = ME.Event_Id
+Inner Join Member M on ME.Member_Id = M.Member_Id
+Group By M.First_Name, M.Last_Name
+order by Total_Cost_Paid desc
+
+select top 1 sum(Event_Price) as max_spend, count(Event.Event_ID)as number_of_events, Member.First_Name, Member.Last_Name
+from Member
+INNER JOIN MemberEvent ON Member.Member_ID = MemberEvent.Member_ID
+INNER Join Event ON Event.Event_ID = MemberEvent.Event_ID
+group by Member.First_Name, Member.Last_Name
+order by max_spend desc
+
+--10) Return which event has most number of bookings
+Select Top 1 Count(E.Event_Id) as Most_Booked_Event, E.Event_Name From Event E
+Inner join MemberEvent ME on E.Event_Id = ME.Event_Id
+--Inner Join Member M on ME.Member_Id = M.Member_Id
+Group By E.Event_Name
+--order by Most_Booked_Event 
