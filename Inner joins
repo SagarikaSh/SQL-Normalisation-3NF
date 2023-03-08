@@ -1,0 +1,98 @@
+
+create DATABASE testdb4
+
+CREATE TABLE Color(ColorID int primary key,
+			Color varchar(255));
+
+Insert into  Color values(1,'Blue'),
+			(2,'Red'),
+			(3,'Black'),
+            (5, 'Green'),
+			(6, 'White');
+
+select * from Color
+
+CREATE TABLE Supplier(SupplierID int primary key,
+			SupplierName varchar(255),
+            Phone varchar(255));
+
+
+Insert into  Supplier values(1,'Contoso','555-12345'),
+				(2,'Northwind','555-54321');
+
+
+select * from Supplier							
+
+CREATE TABLE Product(ProductID int primary key,
+					Name varchar(255),
+					
+Supplier_ID int foreign key references Supplier(SupplierID));
+
+Insert into  Product values(1,'Widget',1),
+				(2,'Thingybob',2),
+				(3,'Knicknack',1);
+
+select * from Product
+
+
+CREATE TABLE ProductColor(Product_ID int foreign key references Product(ProductID),
+Color_ID int foreign key references Color(ColorID));
+
+Insert into  ProductColor values(1,1),
+					(2,1),
+					(2,2),
+					(3,2),
+					(3,3);
+
+                    select * from ProductColor
+
+--list all products that are red
+
+select * from Product P
+inner join ProductColor PC on P.ProductID = PC.Product_ID
+inner join Color C on C.ColorID = PC.Color_ID
+where C.Color='Red'
+
+
+
+-- who supplies 'Widget'
+
+select S.SupplierName, P.Name from Supplier S
+inner join Product P on S.SupplierID =P.Supplier_ID 
+where P.Name ='Widget'
+
+-- list all product and their supplies
+
+select S.SupplierName, P.Name from Supplier S
+inner join Product P on S.SupplierID =P.Supplier_ID 
+
+
+-- list all products and their color and their supplier
+select * from Product P
+inner join ProductColor PC on P.ProductID = PC.Product_ID
+inner join Color C on C.ColorID = PC.Color_ID
+
+
+
+--Insert 'john walsh' as a new supplier and then
+
+Insert into  Supplier values(3,'John Walsh');
+
+select * from Supplier
+
+-- insert 2 products that they supply which are:
+		--1)Bike - colors red blue green
+		--2)Wheel - black,white
+
+Insert into  Product values(4,'Bike','555-12645',3),
+				(5,'Wheel','555-54721',3);
+				
+                select * from Product
+
+Insert into  Color values(5, 'Green'),
+			(6, 'White');
+
+            select * from Color
+
+            Insert into  ProductColor values(4,2),(4,1), (4,5),(5,3),(5,6);
+            select * from ProductColor
