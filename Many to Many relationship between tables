@@ -1,0 +1,102 @@
+Create Database db3
+
+Drop TABLE Persons
+CREATE TABLE Persons
+
+    (PersonId int primary key,
+    LastName varchar(255),
+    FirstName varchar(255),
+    Age int);
+
+
+Drop TABLE Concert
+    CREATE TABLE Concert
+
+        (ConcertId int Primary key,
+         ConcertName varchar (40),
+        ConcertDate DATE );
+
+Drop TABLE Persons_Concert
+        CREATE TABLE Persons_Concert
+
+        (
+            PersonId int Foreign key references Persons(PersonId),   
+        ConcertId int Foreign key references Concert(ConcertId) 
+        );
+
+        Insert into Persons VALUES
+        (1, 'Usyk', 'Alina', 21),
+        (2, 'M', 'Olha', 22),
+        (3, 'D', 'Oleksandra', 22),
+        (4, 'S', 'Sasha', 21),
+        (5, 'P', 'Arpana', 21),
+        (6, 'D', 'Luibov', 21),
+        (7, 'Z', 'Kateryna', 23),
+        (8, 'V', 'Iryna', 23),
+        (9, 'A', 'Yash', 22),
+        (10, 'K', 'Illia', 22),
+        (11, 'K', 'Maksym', 22)
+        ;
+
+Select * from Persons
+
+ Insert into Concert VALUES
+ (1, 'RAMMSTEIN', '12/02/2023'),
+ (2, 'CRANBERRIES', '12/02/2023');
+
+ Select * from Concert
+
+ INSERT INTO Persons_Concert VALUES
+ (1,1),
+ (2,1),
+ (3,1),
+ (1,2),
+ (2,2)
+
+ Insert into Persons_Concert VALUES
+ (8,2)
+
+select * from Persons_Concert
+
+ select * from Persons P
+ inner join Persons_Concert PC on P.PersonId = PC.PersonId
+ inner join Concert C on PC.ConcertId = C.ConcertId
+
+ select * from Persons P
+ full outer join Persons_Concert PC on P.PersonId = PC.PersonId
+ full outer join Concert C on PC.ConcertId = C.ConcertId
+
+ select * from Persons P
+ left join Persons_Concert PC on P.PersonId = PC.PersonId
+ left join Concert C on PC.ConcertId = C.ConcertId
+
+ select * from Persons P
+ RIGHT join Persons_Concert PC on P.PersonId = PC.PersonId
+ RIGHT join Concert C on PC.ConcertId = C.ConcertId
+
+--Query 1
+select * from Persons_Concert PC
+inner join Persons P on P.PersonId = PC.PersonId
+where PC.ConcertId = 2
+
+select * from Persons_Concert
+
+--Query 2 why am I not getting the names of people not going to any concert in the table
+select * from Persons_Concert PC
+full outer join Persons P on P.PersonId = PC.PersonId
+where PC.ConcertId != 2
+
+--Query 3
+select * from Persons_Concert PC
+inner join Persons P on P.PersonId = PC.PersonId
+where PC.ConcertId = 1
+
+--Query 4
+select * from Persons_Concert PC
+inner join Persons P on P.PersonId = PC.PersonId
+where PC.ConcertId != 1
+
+--Query 5
+select Count (*) as Count from Persons_Concert PC 
+inner join Persons P on P.PersonId = PC.PersonId
+where P.FirstName = 'Alina' 
